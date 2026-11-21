@@ -1,0 +1,12 @@
+# Compiled programs
+*.exe
+*.out
+
+# Temporary stand-in files used only on one laptop (Part B). Never upload these.
+temp_stubs/
+
+# Scratch files created by the tests
+tests/_tmp_*
+
+# Editor folders
+.vscode/
