@@ -1,0 +1,47 @@
+# City Route Planner - sample map of Karachi areas
+# LOCATIONS: id,name,x,y      ROADS: id1,id2,distanceKm,timeMin,blocked(0/1)
+LOCATIONS
+0,Keamari,130,480
+1,Lyari,220,400
+2,Saddar,330,430
+3,Clifton,410,525
+4,DHA,560,510
+5,Korangi,690,440
+6,FAST-NUCES,700,345
+7,Malir,715,230
+8,Jinnah Airport,570,310
+9,Gulistan-e-Johar,590,160
+10,Gulshan-e-Iqbal,450,200
+11,Karachi University,340,95
+12,North Nazimabad,190,120
+13,Nazimabad,215,250
+14,Liaquatabad,330,305
+15,Hawks Bay,60,540
+ROADS
+0,1,5.5,15,0
+0,2,9.0,22,0
+1,2,4.5,14,0
+1,13,8.0,24,0
+2,3,6.0,18,0
+2,14,8.5,25,0
+2,4,11.0,40,0
+2,8,14.0,28,0
+3,4,7.0,14,0
+4,5,11.0,20,0
+5,8,12.0,22,0
+5,6,9.0,14,0
+6,7,6.0,10,0
+6,8,10.0,18,0
+7,8,9.5,17,0
+7,9,11.0,20,0
+8,9,8.5,15,0
+8,10,9.0,20,0
+10,9,5.0,14,0
+10,11,6.5,13,0
+10,14,7.0,20,0
+11,12,8.0,18,0
+11,14,8.0,24,0
+12,13,5.0,15,0
+13,14,5.5,16,0
+8,14,12.5,26,0
+END
