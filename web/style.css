@@ -1,0 +1,71 @@
+/*
+  File   : web/style.css
+  Part   : C (Foundations, Interface, Web)
+  Purpose: Look of the page. Idea: a transit-map feel. Cool blue-grey paper,
+           deep ink text, and colour is used ONLY for meaning on the map:
+           teal = chosen route, red = blocked road, violet = cheapest network.
+*/
+:root {
+  --paper: #e9eff3;  --card: #ffffff;  --ink: #14212c;  --muted: #5b6b78;
+  --line: #c5d0d8;   --road: #9aabb8;  --route: #0b8a8a; --blocked: #c4362b; --mst: #6a4ca3;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; display: grid; grid-template-columns: 390px 1fr;
+  font: 15px/1.45 "Segoe UI", system-ui, -apple-system, sans-serif; color: var(--ink); background: var(--paper);
+}
+aside { background: var(--card); border-right: 1px solid var(--line); padding: 18px; overflow-y: auto; max-height: 100vh; }
+main { padding: 18px; }
+h1 { font-size: 22px; margin: 0 0 12px; letter-spacing: -0.01em; }
+
+#msg { margin: 0 0 12px; padding: 9px 12px; border-radius: 6px; font-weight: 600; }
+#msg.err { background: #fbe3e0; color: #8f1d14; border-left: 4px solid var(--blocked); }
+#msg.ok  { background: #dff3f1; color: #07514f; border-left: 4px solid var(--route); }
+
+nav { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 14px; }
+nav button { border: 0; background: transparent; padding: 6px 10px; border-radius: 6px; color: var(--muted); font-weight: 600; }
+nav button.on { background: var(--ink); color: #fff; }
+
+label { display: block; margin: 0 0 10px; color: var(--muted); font-size: 13px; }
+select, input {
+  display: block; width: 100%; margin-top: 3px; padding: 8px; font: inherit; color: var(--ink);
+  background: #fff; border: 1px solid var(--line); border-radius: 6px;
+}
+fieldset { border: 1px solid var(--line); border-radius: 8px; margin: 0 0 12px; padding: 10px 12px 2px; }
+legend { padding: 0 6px; font-weight: 600; font-size: 13px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.row > label { flex: 1; min-width: 110px; }
+.hint { color: var(--muted); font-size: 13px; margin: 8px 0; }
+
+button { font: inherit; padding: 8px 12px; border: 1px solid var(--ink); background: #fff; color: var(--ink); border-radius: 6px; cursor: pointer; }
+button:hover { background: #eef3f6; }
+button.primary { background: var(--route); border-color: var(--route); color: #fff; font-weight: 600; }
+button.primary:hover { background: #087575; }
+button.danger { border-color: var(--blocked); color: var(--blocked); }
+:focus-visible { outline: 3px solid #f2b705; outline-offset: 1px; }
+
+#tStops { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 10px; padding-bottom: 8px; }
+#tStops label { display: flex; align-items: center; gap: 6px; margin: 0; color: var(--ink); }
+#tStops input { width: auto; margin: 0; }
+
+.out { margin-top: 14px; }
+.out .path { font-size: 17px; font-weight: 600; margin: 0 0 8px; }
+.out dl { display: flex; gap: 18px; margin: 0 0 10px; }
+.out dt { color: var(--muted); font-size: 12px; }
+.out dd { margin: 0; font-size: 18px; font-weight: 600; }
+.out ul { list-style: none; padding: 0; margin: 0; }
+.out li { padding: 6px 0; border-bottom: 1px solid var(--line); }
+.out li button { width: 100%; text-align: left; border-color: var(--line); }
+.out li button.on { border-color: var(--route); background: #dff3f1; }
+.out small { color: var(--muted); display: block; }
+
+main canvas { width: 100%; height: auto; background: #fff; border: 1px solid var(--line); border-radius: 8px; }
+.legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 10px; color: var(--muted); font-size: 13px; }
+.k { display: inline-block; width: 26px; height: 0; border-top: 3px solid; margin-right: 7px; vertical-align: middle; }
+.k.road { border-color: var(--road); } .k.route { border-color: var(--route); border-top-width: 6px; }
+.k.blocked { border-color: var(--blocked); border-top-style: dashed; } .k.mst { border-color: var(--mst); border-top-width: 6px; }
+
+@media (max-width: 860px) {
+  body { grid-template-columns: 1fr; }
+  aside { max-height: none; border-right: 0; border-bottom: 1px solid var(--line); }
+}

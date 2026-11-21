@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--
+  File   : web/index.html
+  Part   : C (Foundations, Interface, Web)
+  Purpose: The City Route Planner page. It only shows things and sends commands
+           (see Section 4.4 of the team plan) to the bridge; it never calculates
+           a route itself. All logic of the page is in app.js, the look is in style.css.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>City Route Planner</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<aside>
+  <h1>City Route Planner</h1>
+  <p id="msg" hidden role="status"></p>
+  <nav id="tabs">
+    <button data-tab="route" class="on">Route</button>
+    <button data-tab="trip">Trip</button>
+    <button data-tab="alt">Alternatives</button>
+    <button data-tab="closures">Closures</button>
+    <button data-tab="edit">Edit map</button>
+    <button data-tab="search">Search</button>
+    <button data-tab="analysis">Analysis</button>
+    <button data-tab="history">History</button>
+  </nav>
+
+  <section id="route" class="panel">
+    <label>From <select class="loc" id="rFrom"></select></label>
+    <label>To <select class="loc" id="rTo"></select></label>
+    <label>Find the
+      <select id="rMode">
+        <option value="ROUTE_DIST">shortest route</option>
+        <option value="ROUTE_TIME">fastest route</option>
+        <option value="ROUTE_FEWEST">route with fewest roads</option>
+      </select></label>
+    <button id="rGo" class="primary">Find route</button>
+    <div class="out" id="rOut"></div>
+  </section>
+
+  <section id="trip" class="panel" hidden>
+    <label>Start at <select class="loc" id="tFrom"></select></label>
+    <fieldset><legend>Stops to visit (pick 2 to 6)</legend><div id="tStops"></div></fieldset>
+    <label>Order stops by <select id="tMode"><option value="DIST">distance</option><option value="TIME">time</option></select></label>
+    <button id="tGo" class="primary">Plan trip</button>
+    <div class="out" id="tOut"></div>
+  </section>
+
+  <section id="alt" class="panel" hidden>
+    <label>From <select class="loc" id="aFrom"></select></label>
+    <label>To <select class="loc" id="aTo"></select></label>
+    <label>Sort by <select id="aKey"><option value="DIST">distance</option><option value="TIME">time</option><option value="HOPS">number of roads</option></select></label>
+    <button id="aGo" class="primary">Show alternatives</button>
+    <div class="out" id="aOut"></div>
+  </section>
+
+  <section id="closures" class="panel" hidden>
+    <label>Road <select id="cRoad"></select></label>
+    <div class="row"><button id="cBlock" class="danger">Block road</button><button id="cUnblock">Unblock road</button></div>
+    <p class="hint">After a change, your last route is planned again automatically.</p>
+    <div class="out" id="cOut"></div>
+  </section>
+
+  <section id="edit" class="panel" hidden>
+    <div class="row"><button id="eUndo">Undo last edit</button><button id="eSave">Save map</button></div>
+    <fieldset><legend>Location</legend>
+      <label>Existing location <select class="loc" id="eLoc"></select></label>
+      <label>Name <input id="eName" maxlength="30"></label>
+      <div class="row"><label>x <input id="eX" type="number" min="0"></label><label>y <input id="eY" type="number" min="0"></label></div>
+      <div class="row"><button id="eAdd">Add as new</button><button id="eUpd">Update selected</button><button id="eDel" class="danger">Remove selected</button></div>
+    </fieldset>
+    <fieldset><legend>Road</legend>
+      <label>Between <select class="loc" id="roA"></select></label>
+      <label>and <select class="loc" id="roB"></select></label>
+      <div class="row"><label>Distance (km) <input id="roD" type="number" min="0" step="any"></label><label>Time (min) <input id="roT" type="number" min="0" step="any"></label></div>
+      <div class="row"><button id="roAdd">Add road</button><button id="roUpd">Update road</button><button id="roDel" class="danger">Remove road</button></div>
+    </fieldset>
+  </section>
+
+  <section id="search" class="panel" hidden>
+    <label>Name starts with <input id="sText" placeholder="e.g. Sa"></label>
+    <div class="row"><button id="sGo" class="primary">Search</button><button id="sAll">List A to Z</button></div>
+    <div class="out" id="sOut"></div>
+  </section>
+
+  <section id="analysis" class="panel" hidden>
+    <div class="row"><button id="nConn">Check connectivity</button><button id="nMst">Show cheapest network</button></div>
+    <div class="out" id="nOut"></div>
+  </section>
+
+  <section id="history" class="panel" hidden>
+    <button id="hGo">Refresh history</button>
+    <div class="out" id="hOut"></div>
+  </section>
+</aside>
+
+<main>
+  <canvas id="map" width="800" height="600" aria-label="Map of locations and roads"></canvas>
+  <div class="legend">
+    <span><i class="k road"></i>Road</span><span><i class="k route"></i>Chosen route</span>
+    <span><i class="k blocked"></i>Blocked road</span><span><i class="k mst"></i>Cheapest network</span>
+  </div>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
