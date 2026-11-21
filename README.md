@@ -4,10 +4,9 @@
 
 **Find the best way across the city, built on data structures we wrote ourselves.**
 
-![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C?logo=cplusplus&logoColor=white)
+![C++11](https://img.shields.io/badge/C%2B%2B-11-00599C?logo=cplusplus&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)
 ![Course](https://img.shields.io/badge/Course-Data%20Structures-2E8B57)
-
 
 </div>
 
@@ -20,8 +19,8 @@ A C++ application that models a city as a network of locations and roads, and fi
 | Member | Roll No. | Role |
 |--------|----------|------|
 | Aiza Humayun | 24K-3116 | Part B: map data, search, undo, save/load, spanning tree |
-| Ilham Fatima | 25K-3024 | Part C: containers, command interface, web page, integration | 
 | Marium Jamshed | 25K-3073 | Part A: graph, shortest paths, alternate routes |
+| Ilham Fatima | 25K-3024 | Part C: containers, command interface, web page, integration |
 
 ## How it works
 
@@ -73,10 +72,18 @@ CityRoutePlanner/
 
 ## Setup
 
-Requires a C++17 compiler (g++) and Python 3. Run every command from the project root folder.
+Requires g++ (C++11 or newer) and Python 3. Run every command from the project root folder.
+
+If you use Dev-C++, first run this once in the command window so g++ is found:
 
 ```
-g++ -std=c++17 -Wall -o backend/planner.exe backend/main.cpp
+set PATH=C:\Program Files (x86)\Dev-Cpp\MinGW64\bin;%PATH%
+```
+
+Then build:
+
+```
+g++ -std=c++11 -Wall -o backend/planner.exe backend/main.cpp
 ```
 
 ## Run
@@ -98,7 +105,7 @@ Then open http://localhost:8000 in a browser.
 ## Test
 
 ```
-g++ -std=c++17 -Wall -I backend -o tests/test_mapdata.exe tests/test_mapdata.cpp
+g++ -std=c++11 -Wall -I backend -o tests/test_mapdata.exe tests/test_mapdata.cpp
 tests\test_mapdata.exe
 ```
 
