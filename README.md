@@ -7,7 +7,7 @@
 ![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C?logo=cplusplus&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white)
 ![Course](https://img.shields.io/badge/Course-Data%20Structures-2E8B57)
-![Status](https://img.shields.io/badge/Status-In%20Development-orange)
+
 
 </div>
 
