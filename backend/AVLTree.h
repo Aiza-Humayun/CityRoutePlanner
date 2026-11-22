@@ -1,37 +1,3 @@
-/*
- * =============================================================================
- * File    : AVLTree.h
- * Part    : B (Map Data and Analysis)
- * Purpose : Keeps all location NAMES sorted so we can show an alphabetical list
- *           and do prefix search ("sa" finds Saddar, Sea View, ...).
- *           Each node stores the name and the location's id.
- * Course  : Lab 8  - Binary search trees and their operations.
- *           Lab 9  - AVL trees (balance factor, rotations, insert and remove).
- *           Lab 6  - Recursion (every operation here is recursive).
- *
- * WHY AVL AND NOT A PLAIN BST?
- *   A plain BST can become a long "stick" if names are inserted in sorted order
- *   (height n, so searching costs O(n)). An AVL tree rebalances itself with
- *   rotations after each insert/remove so its height is always O(log n).
- *
- * KEY IDEAS
- *   - height of a node  = 1 + max(height of left, height of right); empty = 0
- *   - balance factor    = height(left) - height(right); must stay -1, 0 or +1
- *   - If a node becomes unbalanced there are 4 cases, fixed by rotations:
- *        LL (left-left)   -> one right rotation
- *        RR (right-right) -> one left rotation
- *        LR (left-right)  -> left rotation on the left child, then right rotation
- *        RL (right-left)  -> right rotation on the right child, then left rotation
- *
- * COMPLEXITY
- *   insert / remove / find : O(log n)
- *   in-order listing       : O(n)
- *   prefix search          : O(log n + k)   (k = number of matches)
- *
- * Names are compared case-insensitively (we compare lowercase "keys"), but the
- * original spelling is kept in the node for display.
- * =============================================================================
- */
 #pragma once
 #include <string>
 
@@ -39,12 +5,12 @@ class AVLTree {
 private:
     // One tree node.
     struct Node {
-        std::string name;     // original spelling, e.g. "Gulshan-e-Iqbal"
-        std::string key;      // lowercase version, used for ordering
-        int         id;       // location id
-        int         height;   // height of the subtree rooted here (leaf = 1)
-        Node*       left;     // names that come BEFORE this one
-        Node*       right;    // names that come AFTER this one
+        std::string name;     
+        std::string key;     
+        int         id;      
+        int         height;   
+        Node*       left;     
+        Node*       right;    
 
         Node(const std::string& n, const std::string& k, int i)
             : name(n), key(k), id(i), height(1), left(nullptr), right(nullptr) {}
@@ -62,10 +28,9 @@ private:
         return out;
     }
 
-    static int heightOf(Node* n) { return n ? n->height : 0; }   // empty subtree = 0
+    static int heightOf(Node* n) { return n ? n->height : 0; }   
     static int maxOf(int a, int b) { return a > b ? a : b; }
 
-    // Recomputes a node's height from its children (call after changing children).
     static void updateHeight(Node* n) {
         n->height = 1 + maxOf(heightOf(n->left), heightOf(n->right));
     }
@@ -76,17 +41,6 @@ private:
     }
 
     // ------------------------------------------------------------- rotations
-    /*
-     * Right rotation around y (used when the LEFT side is too tall):
-     *
-     *         y                x
-     *        / \              / \
-     *       x   C    ==>     A   y
-     *      / \                  / \
-     *     A   B                B   C
-     *
-     * Order is preserved: A < x < B < y < C. Returns the new top (x).
-     */
     static Node* rotateRight(Node* y) {
         Node* x = y->left;
         Node* b = x->right;
@@ -97,15 +51,6 @@ private:
         return x;
     }
 
-    /*
-     * Left rotation around x (used when the RIGHT side is too tall): mirror image.
-     *
-     *       x                    y
-     *      / \                  / \
-     *     A   y      ==>       x   C
-     *        / \              / \
-     *       B   C            A   B
-     */
     static Node* rotateLeft(Node* x) {
         Node* y = x->right;
         Node* b = y->left;
@@ -138,8 +83,6 @@ private:
     }
 
     // ---------------------------------------------------------------- insert
-    // Recursive BST insert, then rebalance on the way back up.
-    // 'inserted' becomes true only if a new node was really added.
     static Node* insertNode(Node* n, const std::string& name, const std::string& key,
                             int id, bool& inserted) {
         if (n == nullptr) {                          // found the empty spot
@@ -156,7 +99,6 @@ private:
     }
 
     // ---------------------------------------------------------------- remove
-    // Recursive BST delete (3 cases), then rebalance on the way back up.
     static Node* removeNode(Node* n, const std::string& key, bool& removed) {
         if (n == nullptr) return nullptr;            // key not in the tree
 
@@ -187,7 +129,6 @@ private:
     }
 
     // ------------------------------------------------------------- traversals
-    // In-order = left, node, right = alphabetical order.
     static void fillInOrder(Node* n, std::string* names, int* ids, int& pos) {
         if (n == nullptr) return;
         fillInOrder(n->left, names, ids, pos);
@@ -201,10 +142,6 @@ private:
         return text.size() >= prefix.size() && text.compare(0, prefix.size(), prefix) == 0;
     }
 
-    // Prefix search. All keys that start with 'prefix' form one continuous block in
-    // sorted order, so we only walk into the subtrees that can contain that block:
-    //   - go LEFT  only if this key >= prefix (smaller keys could still match)
-    //   - go RIGHT only if this key < prefix, or it starts with the prefix
     static void fillPrefix(Node* n, const std::string& prefix,
                            std::string* names, int* ids, int& pos) {
         if (n == nullptr) return;
@@ -250,10 +187,8 @@ private:
 public:
     AVLTree() : root(nullptr), count(0) {}
 
-    // RULE OF THREE (1/3): copy constructor - deep copy of the whole tree.
     AVLTree(const AVLTree& other) : root(cloneTree(other.root)), count(other.count) {}
 
-    // RULE OF THREE (2/3): copy assignment.
     AVLTree& operator=(const AVLTree& other) {
         if (this != &other) {
             destroyTree(root);
@@ -263,7 +198,6 @@ public:
         return *this;
     }
 
-    // RULE OF THREE (3/3): destructor.
     ~AVLTree() { destroyTree(root); }
 
     // insert: adds name -> id. Returns false if the name (ignoring case) already exists.
@@ -286,7 +220,7 @@ public:
     int find(const std::string& name) const {
         std::string key = toLowerKey(name);
         Node* n = root;
-        while (n != nullptr) {                       // ordinary BST search (iterative)
+        while (n != nullptr) {                      
             if (key < n->key)      n = n->left;
             else if (key > n->key) n = n->right;
             else                   return n->id;
@@ -294,23 +228,12 @@ public:
         return -1;
     }
 
-    /*
-     * toArray: fills 'names' and 'ids' with every entry in ALPHABETICAL order.
-     * The caller must allocate both arrays with at least size() elements.
-     * Returns how many entries were written.
-     */
     int toArray(std::string* names, int* ids) const {
         int pos = 0;
         fillInOrder(root, names, ids, pos);
         return pos;
     }
 
-    /*
-     * prefixSearch: fills the arrays with every name that starts with 'prefix'
-     * (case-insensitive), in alphabetical order. An empty prefix returns everything.
-     * The caller must allocate both arrays with at least size() elements.
-     * Returns how many matches were written.
-     */
     int prefixSearch(const std::string& prefix, std::string* names, int* ids) const {
         int pos = 0;
         fillPrefix(root, toLowerKey(prefix), names, ids, pos);
@@ -320,13 +243,11 @@ public:
     int size() const { return count; }
     int height() const { return heightOf(root); }
 
-    // For tests: true if every node has balance factor -1, 0 or +1 and correct height.
     bool isBalanced() const {
         int h = 0;
         return checkBalanced(root, h);
     }
 
-    // clear: removes everything.
     void clear() {
         destroyTree(root);
         root = nullptr;
