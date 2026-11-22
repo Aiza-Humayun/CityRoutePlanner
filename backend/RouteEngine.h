@@ -1,23 +1,4 @@
 #pragma once
-/*
- * File:    RouteEngine.h
- * Author:  Marium Jamshed (25K-3073) - Part A, Route Engine
- * Purpose: All route-finding. Every public function returns one line of JSON.
- *          Nothing here prints to cout.
- *
- *   shortestByDistance / shortestByTime  -> Dijkstra with a min-heap
- *   fewestStops                          -> BFS with a queue
- *   multiStop                            -> nearest stop first, using Dijkstra
- *   alternateRoutes                      -> DFS with backtracking + merge sort
- *   blockRoad / unblockRoad              -> close / open a road
- *
- * Every algorithm skips blocked roads, so after blocking a road the next
- * search automatically finds a new way.
- *
- * Course topics: Lab 4 linked lists, Lab 5 queue, Lab 6 recursion and
- *                backtracking, Lab 7 merge sort, Lab 10 heaps, Lab 11 graphs.
- */
-
 #include <string>
 #include "Graph.h"
 #include "MinHeap.h"
@@ -27,12 +8,11 @@
 #include "Json.h"
 using namespace std;
 
-const double INF = 1000000000.0;   // means "cannot reach"
-const int MAX_ROUTES = 200;        // alternate routes: stop after finding 200
-const int MAX_HOPS = 12;           // alternate routes: ignore paths longer than 12 roads
-const int ROUTES_TO_SHOW = 5;      // alternate routes: show the best 5
+const double INF = 1000000000.0;   
+const int MAX_ROUTES = 200;        // stop after finding 200
+const int MAX_HOPS = 12;           // ignore paths longer than 12 roads
+const int ROUTES_TO_SHOW = 5;    
 
-// One full route (used to collect and sort alternate routes).
 struct Route {
     SinglyLinkedList<int> path;   // location ids from source to destination
     double totalDist;
@@ -46,7 +26,6 @@ struct Route {
     }
 };
 
-// Compare functions for mergeSort: true if a should come before b.
 bool compareByDist(const Route& a, const Route& b) {
     return a.totalDist < b.totalDist;
 }
@@ -59,17 +38,15 @@ bool compareByHops(const Route& a, const Route& b) {
 
 class RouteEngine {
 private:
-    Graph& graph;                 // the one shared map
+    Graph& graph;                 
 
-    // Used by the alternate-routes DFS (set up in alternateRoutes)
-    Route* foundRoutes;           // routes found so far
+    Route* foundRoutes;          
     int    foundCount;
-    bool*  visited;               // locations already on the current path
-    int    pathIds[MAX_HOPS + 1]; // the current path being explored
-    int    target;                // destination of the DFS
+    bool*  visited;              
+    int    pathIds[MAX_HOPS + 1]; 
+    int    target;                
 
 public:
-    // Saves a reference to the map. A reference must be set this way.
     RouteEngine(Graph& g) : graph(g) {
         foundRoutes = nullptr;
         foundCount = 0;
@@ -77,20 +54,14 @@ public:
         target = -1;
     }
 
-    // ROUTE_DIST: shortest route in km.  Time: O((V + E) log V)
     string shortestByDistance(int src, int dst) {
         return shortestRoute(src, dst, false);
     }
 
-    // ROUTE_TIME: fastest route in minutes.  Time: O((V + E) log V)
     string shortestByTime(int src, int dst) {
         return shortestRoute(src, dst, true);
     }
 
-    // ROUTE_FEWEST: route with the fewest roads, using BFS.
-    // BFS visits everything 1 road away, then 2 roads away, and so on,
-    // so the first time it reaches dst it used the fewest roads.
-    // Time: O(V + E)
     string fewestStops(int src, int dst) {
         if (!graph.isActive(src)) {
             return jsonError("Unknown source location");
@@ -101,7 +72,7 @@ public:
 
         int n = graph.nodeCount();
         bool* seen = new bool[n];
-        int* parent = new int[n];       // parent[v] = location we came from
+        int* parent = new int[n];       
         for (int i = 0; i < n; i++) {
             seen[i] = false;
             parent[i] = -1;
@@ -139,13 +110,7 @@ public:
         return "{\"ok\":true," + routeFields(path) + "}";
     }
 
-    // MULTI: start at src and visit every stop (2 to 6 stops).
-    // Method (nearest neighbour): from where we are, run Dijkstra, go to the
-    // closest stop not visited yet, and repeat until all stops are visited.
-    // byTime = false uses distance, true uses time.
-    // Time: O(k (V + E) log V) for k stops
     string multiStop(bool byTime, int src, int stops[], int stopCount) {
-        // ---- check the input ----
         if (stopCount < 2 || stopCount > 6) {
             return jsonError("Give between 2 and 6 stops");
         }
@@ -193,8 +158,6 @@ public:
                     nearest = i;
                 }
             }
-
-            // even the closest stop cannot be reached
             if (best[stops[nearest]] >= INF) {
                 string name = graph.getName(stops[nearest]);
                 delete[] best;
@@ -203,10 +166,9 @@ public:
                 return jsonError("Cannot reach stop: " + name);
             }
 
-            // add this part of the trip to the full path
             SinglyLinkedList<int> leg;
             makePath(current, stops[nearest], parent, leg);
-            ListNode<int>* node = leg.getHead()->next;   // skip the first one: it is already in path
+            ListNode<int>* node = leg.getHead()->next;   
             while (node != nullptr) {
                 path.pushBack(node->data);
                 node = node->next;
@@ -228,12 +190,6 @@ public:
         return "{\"ok\":true," + routeFields(path) + ",\"order\":[" + order + "]}";
     }
 
-    // ALTERNATES: up to 5 different routes, sorted by
-    // sortKey 0 = distance, 1 = time, 2 = hops.
-    // DFS tries every path; backtracking un-marks a location when we come
-    // back, so other paths can use it. Limits: 200 routes, 12 roads.
-    // Time: exponential in the worst case (that is why we have limits),
-    //       plus O(R log R) for merge sort of R routes.
     string alternateRoutes(int src, int dst, int sortKey) {
         if (sortKey < 0 || sortKey > 2) {
             return jsonError("Sort key must be DIST, TIME or HOPS");
@@ -276,7 +232,6 @@ public:
             mergeSort(foundRoutes, foundCount, compareByHops);
         }
 
-        // build the reply with the best 5
         int show = foundCount;
         if (show > ROUTES_TO_SHOW) {
             show = ROUTES_TO_SHOW;
@@ -295,7 +250,6 @@ public:
         return reply;
     }
 
-    // BLOCK: close a road.  Time: O(roads of u + roads of v)
     string blockRoad(int u, int v) {
         if (!graph.isActive(u) || !graph.isActive(v)) {
             return jsonError("Unknown location");
@@ -330,7 +284,6 @@ public:
     }
 
 private:
-    // Finds the road from u to v, or nullptr.  Time: O(roads of u)
     EdgeNode* findRoad(int u, int v) {
         EdgeNode* road = graph.getEdges(u);
         while (road != nullptr) {
@@ -342,18 +295,10 @@ private:
         return nullptr;
     }
 
-    // Error used when no route exists.  Time: O(1)
     string noRouteError(int src, int dst) {
         return jsonError("No route found from " + graph.getName(src) + " to " + graph.getName(dst));
     }
 
-    // DIJKSTRA from src.
-    // After it runs: best[v]   = cheapest cost from src to v (INF if unreachable)
-    //                parent[v] = location just before v on that route
-    // byTime = false uses distance, true uses time.
-    // If a cheaper way to v is found, v is pushed again ("lazy deletion");
-    // when an old copy is popped later it is skipped because done[v] is true.
-    // Time: O((V + E) log V)
     void dijkstra(int src, bool byTime, double best[], int parent[]) {
         int n = graph.nodeCount();
         bool* done = new bool[n];
@@ -371,9 +316,9 @@ private:
             HeapEntry top = heap.pop();      // closest unfinished location
             int u = top.node;
             if (done[u]) {
-                continue;                    // old copy: skip it
+                continue;                   
             }
-            done[u] = true;                  // best[u] is now final
+            done[u] = true;                 
 
             EdgeNode* road = graph.getEdges(u);
             while (road != nullptr) {
@@ -383,7 +328,7 @@ private:
                     cost = road->time;
                 }
                 if (!road->blocked && graph.isActive(v) && !done[v]) {
-                    if (best[u] + cost < best[v]) {   // found a cheaper way to v
+                    if (best[u] + cost < best[v]) {   
                         best[v] = best[u] + cost;
                         parent[v] = u;
                         heap.push(v, best[v]);
@@ -395,7 +340,6 @@ private:
         delete[] done;
     }
 
-    // Shared code for ROUTE_DIST and ROUTE_TIME.  Time: O((V + E) log V)
     string shortestRoute(int src, int dst, bool byTime) {
         if (!graph.isActive(src)) {
             return jsonError("Unknown source location");
@@ -420,10 +364,6 @@ private:
         return "{\"ok\":true," + routeFields(path) + "}";
     }
 
-    // Builds the path by walking parent[] backwards from dst to src.
-    // pushFront puts each location at the start, so the list reads src -> dst.
-    // Returns false if src is never reached (no route).
-    // Time: O(length of path)
     bool makePath(int src, int dst, int parent[], SinglyLinkedList<int>& path) {
         path.clear();
         int current = dst;
@@ -438,10 +378,6 @@ private:
         return false;
     }
 
-    // Turns a path into JSON fields:
-    //   "path":["A","B"],"totalDist":5,"totalTime":12,"hops":1
-    // Totals are added up from the roads on the path.
-    // Time: O(length of path x roads per location)
     string routeFields(SinglyLinkedList<int>& path) {
         double totalDist = 0;
         double totalTime = 0;
@@ -455,7 +391,7 @@ private:
             }
             names += jsonQuote(graph.getName(node->data));
 
-            if (node->next != nullptr) {          // there is a road to the next location
+            if (node->next != nullptr) {         
                 EdgeNode* road = findRoad(node->data, node->next->data);
                 if (road != nullptr) {
                     totalDist += road->dist;
@@ -470,15 +406,12 @@ private:
              + ",\"totalTime\":" + numToStr(totalTime) + ",\"hops\":" + to_string(hops);
     }
 
-    // RECURSIVE DFS used by alternateRoutes.
-    // current = where we are, hops = roads used so far,
-    // dist/time = totals so far, pathIds[0..hops] = the path so far.
     void findAllPaths(int current, int hops, double dist, double time) {
         if (foundCount == MAX_ROUTES) {
             return;                                 // limit reached
         }
 
-        if (current == target) {                    // reached: save a copy
+        if (current == target) {                  
             Route& r = foundRoutes[foundCount];
             for (int i = 0; i <= hops; i++) {
                 r.path.pushBack(pathIds[i]);
@@ -498,10 +431,10 @@ private:
         while (road != nullptr) {
             int next = road->to;
             if (!road->blocked && graph.isActive(next) && !visited[next]) {
-                visited[next] = true;               // step forward
+                visited[next] = true;               
                 pathIds[hops + 1] = next;
                 findAllPaths(next, hops + 1, dist + road->dist, time + road->time);
-                visited[next] = false;              // BACKTRACK: step back
+                visited[next] = false;              // BACKTRACKING
             }
             road = road->next;
         }
