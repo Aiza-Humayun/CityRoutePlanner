@@ -1,33 +1,3 @@
-/*
- * =============================================================================
- * File    : CommandHandler.h
- * Part    : C (Foundations, Interface, Web)
- * Purpose : The "switchboard" of the engine. It receives ONE text command line
- *           (for example  ROUTE_DIST|Saddar|Clifton ), checks it, converts
- *           names to ids, calls the right function of Part A or Part B, and
- *           returns ONE line of JSON.
- * Course  : Lab 1 - classes and ADTs, Lab 4 - the history list, string handling.
- *
- * STEPS OF handle()  (Section 4 / task C2 of the team plan)
- *   1. trim the line                     (an empty line is ignored)
- *   2. split it on '|'                   (our own split function)
- *   3. read the command name             (case-insensitive)
- *   4. check the number of arguments     ("Wrong number of arguments for X")
- *   5. turn location names into ids      with map.findId  ("Unknown location: X")
- *   6. turn number text into numbers     ("Not a number: abc")
- *   7. call the owner's function         (Part A engine / Part B map, net, history)
- *   8. return the string it gave back
- *
- * WHY NAMES -> IDS HERE?  The web page only knows names. Inside C++ every
- * location is an integer id. This class is the ONE place where the two worlds
- * meet, so no other file needs to care.
- *
- * HISTORY: after a successful route command (reply starts with {"ok":true) a
- * readable line such as "Shortest by distance: Saddar to Clifton" is added.
- *
- * This class never prints. Only main.cpp writes to cout.
- * =============================================================================
- */
 #pragma once
 #include <string>
 #include <iostream>
@@ -41,21 +11,17 @@
 
 class CommandHandler {
 private:
-    // The members are built in THIS order (C++ uses declaration order), and the
-    // other four need the graph, so the graph must come first.
     Graph           graph;
     MapManager      map;
     RouteEngine     engine;
     NetworkAnalysis net;
     TripHistory     history;
 
-    static constexpr int MAX_PARTS = 32;      // more '|' separated parts than this is rejected
+    static constexpr int MAX_PARTS = 32;      
 
-    // Where the map is loaded from (startup and LOAD) and written to (SAVE).
     static const char* mapPath() { return "data/map.txt"; }
 
     // ------------------------------------------------------------ text helpers
-    // Removes spaces, tabs and line breaks (including Windows '\r') at both ends.
     static std::string trim(const std::string& s) {
         size_t start = 0;
         size_t end = s.size();
@@ -64,7 +30,6 @@ private:
         return s.substr(start, end - start);
     }
 
-    // Converts a-z to A-Z (command names and keywords are case-insensitive).
     static std::string toUpper(const std::string& s) {
         std::string out = s;
         for (size_t i = 0; i < out.size(); i++) {
@@ -73,13 +38,6 @@ private:
         return out;
     }
 
-    /*
-     * splitLine: our own split on '|'. Empty parts are kept ("a||b" gives 3 parts)
-     * and every part is trimmed. Allocates the array with new[]; the caller must
-     * delete[] it. If the line has more than MAX_PARTS parts, 'parts' is set to
-     * nullptr and nothing is allocated.
-     * Returns the number of parts (at least 1).  Time: O(length of line)
-     */
     static int splitLine(const std::string& line, std::string*& parts) {
         int count = 1;
         for (size_t i = 0; i < line.size(); i++) {
@@ -104,10 +62,6 @@ private:
         return count;
     }
 
-    /*
-     * parseNumber: strict text -> number. Accepts "3", "3.5", "-2", " 7 ".
-     * Rejects "", "abc", "3x", "1 2". Returns true and sets 'out' on success.
-     */
     static bool parseNumber(const std::string& text, double& out) {
         std::string t = trim(text);
         if (t.empty()) return false;
@@ -116,7 +70,7 @@ private:
         in >> value;
         if (in.fail()) return false;
         in >> std::ws;
-        if (!in.eof()) return false;              // leftover characters such as the "x" in "3x"
+        if (!in.eof()) return false;          
         out = value;
         return true;
     }
@@ -151,10 +105,6 @@ private:
     }
 
     // ------------------------------------------------------------ the commands
-    /*
-     * dispatch: runs one command. 'a' holds the arguments (the parts after the
-     * command name) and 'argc' says how many there are.
-     */
     std::string dispatch(const std::string& cmd, std::string* a, int argc) {
         std::string err;
 
@@ -173,14 +123,14 @@ private:
         if (cmd == "SEARCH") { if (argc != 1) return wrongArgs(cmd); return map.searchPrefix(a[0]); }
 
         // ---------------- location edits ----------------
-        if (cmd == "ADD_LOCATION") {                       // name | x | y
+        if (cmd == "ADD_LOCATION") {                      
             if (argc != 3) return wrongArgs(cmd);
             double x = 0, y = 0;
             if (!parseNumber(a[1], x)) return notANumber(a[1]);
             if (!parseNumber(a[2], y)) return notANumber(a[2]);
-            return map.addLocation(a[0], x, y);            // the new name is not looked up
+            return map.addLocation(a[0], x, y);            
         }
-        if (cmd == "UPDATE_LOCATION") {                    // oldName | newName | x | y
+        if (cmd == "UPDATE_LOCATION") {                    
             if (argc != 4) return wrongArgs(cmd);
             int id = lookup(a[0], err);
             if (id == -1) return err;
@@ -197,7 +147,7 @@ private:
         }
 
         // ---------------- road edits ----------------
-        if (cmd == "ADD_ROAD" || cmd == "UPDATE_ROAD") {   // nameA | nameB | distKm | timeMin
+        if (cmd == "ADD_ROAD" || cmd == "UPDATE_ROAD") 
             if (argc != 4) return wrongArgs(cmd);
             int u = lookup(a[0], err);
             if (u == -1) return err;
@@ -209,7 +159,7 @@ private:
             if (cmd == "ADD_ROAD") return map.addRoad(u, v, dist, time);
             return map.updateRoad(u, v, dist, time);
         }
-        if (cmd == "REMOVE_ROAD") {                        // nameA | nameB
+        if (cmd == "REMOVE_ROAD") {                        
             if (argc != 2) return wrongArgs(cmd);
             int u = lookup(a[0], err);
             if (u == -1) return err;
@@ -219,7 +169,7 @@ private:
         }
 
         // ---------------- road closures ----------------
-        if (cmd == "BLOCK" || cmd == "UNBLOCK") {          // nameA | nameB
+        if (cmd == "BLOCK" || cmd == "UNBLOCK") {         
             if (argc != 2) return wrongArgs(cmd);
             int u = lookup(a[0], err);
             if (u == -1) return err;
@@ -265,7 +215,7 @@ private:
         }
 
         // ---------------- alternate routes ----------------
-        if (cmd == "ALTERNATES") {                         // source | destination | sortKey
+        if (cmd == "ALTERNATES") {                        
             if (argc != 3) return wrongArgs(cmd);
             int src = lookup(a[0], err);
             if (src == -1) return err;
@@ -287,17 +237,11 @@ private:
     }
 
 public:
-    /*
-     * Constructor: builds the members in order and loads data/map.txt.
-     * A missing or broken map file is only a WARNING (on cerr); the engine still
-     * starts with an empty map so the web page can show the error.
-     */
     CommandHandler() : graph(), map(graph), engine(graph), net(graph), history() {
         std::string reply = map.loadFromFile(mapPath());
         if (!isSuccess(reply)) std::cerr << "Warning: " << reply << "\n";
     }
 
-    // One command line in -> ONE JSON line out. An empty line returns "" (ignored).
     std::string handle(const std::string& rawLine) {
         std::string line = trim(rawLine);
         if (line.empty()) return "";
@@ -312,7 +256,6 @@ public:
         return reply;
     }
 
-    // True if the line is the EXIT command. main.cpp checks this BEFORE calling handle().
     static bool isExit(const std::string& line) {
         return toUpper(trim(line)) == "EXIT";
     }
