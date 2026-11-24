@@ -1,29 +1,4 @@
-/*
- * =============================================================================
- * File    : HashTable.h
- * Part    : B (Map Data and Analysis)
- * Purpose : Fast lookup of a location's id from its NAME.
- *           Example: find("Saddar") -> 2      (returns -1 if not present)
- * Course  : Lab 10 - Hashing, hash functions, collision resolution, rehashing.
- *           Lab 4  - linked lists (each bucket is a chain).
- *           Lab 1  - Rule of Three (destructor, copy constructor, copy assignment).
- *
- * HOW IT WORKS (viva summary)
- *   1. The name is converted to lowercase, so "Saddar" and "SADDAR" are the
- *      same key (our map is case-insensitive).
- *   2. A hash function turns the text into a number:  h = h * 31 + character.
- *      That number modulo the table size gives the bucket (slot) index.
- *   3. COLLISIONS (two different names landing in the same bucket) are handled
- *      by SEPARATE CHAINING: every bucket holds a linked list of entries.
- *   4. REHASHING: when the table gets too full (load factor above 0.7) it is
- *      replaced by a bigger table and every entry is re-inserted, so chains
- *      stay short and lookups stay O(1) on average.
- *
- * COMPLEXITY
- *   insert / find / remove : O(1) average, O(n) worst case (all keys in one chain)
- *   rehash                 : O(n), but it happens rarely (table size doubles)
- * =============================================================================
- */
+
 #pragma once
 #include <string>
 
