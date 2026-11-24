@@ -1,19 +1,3 @@
-/*
- * File    : test_containers.cpp
- * Part    : C (Foundations, Interface, Web)
- * Purpose : Tests Json.h, LinkedList.h, Stack.h, Queue.h and Sorting.h on their
- *           own. Prints one PASS/FAIL line per check, then a summary.
- *           Includes the Rule of Three copy tests and sorting 1000 random numbers.
- *
- * Build (from the project root):
- *   g++ -std=c++17 -Wall -I backend -o tests/test_containers.exe tests/test_containers.cpp
- * Run:
- *   tests\test_containers.exe
- *
- * NOTE: a few tests pop from an EMPTY container on purpose. The containers print
- * a short message to cerr (stderr) in that case, so lines starting with
- * "Stack::", "Queue::" or "...LinkedList::" in the output are expected.
- */
 
 #include <iostream>
 #include <string>
