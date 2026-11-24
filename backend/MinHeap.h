@@ -1,16 +1,6 @@
 #pragma once
-/*
- * File:    MinHeap.h
- * Author:  Marium Jamshed (25K-3073) - Part A, Route Engine
- * Purpose: A min-heap (priority queue). Dijkstra uses it to always take the
- *          location with the SMALLEST cost so far.
- * Course topics: Lab 10 heaps / priority queues, Lab 2 dynamic arrays.
- *
- * The heap is stored in an array:
- *   - the smallest item is always at index 0
- *   - children of index i are at 2*i+1 and 2*i+2
- *   - parent of index i is at (i-1)/2
- */
+
+ 
 
 #include <iostream>
 using namespace std;
