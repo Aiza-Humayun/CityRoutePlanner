@@ -1,19 +1,4 @@
-/*
- * =============================================================================
- * File    : tests/test_mapdata.cpp
- * Part    : B (Map Data and Analysis)
- * Purpose : Tests ALL of Part B on its own and prints PASS / FAIL for each check.
- *
- * Build (from the project root folder):
- *   g++ -std=c++17 -Wall -I backend -I temp_stubs -o tests/test_mapdata.exe tests/test_mapdata.cpp
- * Run (also from the project root, so "data/map.txt" is found):
- *   tests\test_mapdata.exe          (Windows)      ./tests/test_mapdata.exe   (Linux)
- *
- * "-I temp_stubs" lets the test use the temporary stand-ins for Part A and Part C
- * files. Once their real files are in backend/, they are found first automatically.
- * It writes two small scratch files into tests/ (_tmp_save.txt, _tmp_bad.txt).
- * =============================================================================
- */
+
 #include <iostream>
 #include <string>
 #include <fstream>
