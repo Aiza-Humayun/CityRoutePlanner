@@ -1,37 +1,9 @@
-/*
- * =============================================================================
- * File    : Json.h
- * Part    : C (Foundations, Interface, Web)
- * Purpose : Small helpers that build the JSON text the engine prints.
- *           Every reply of the engine is ONE line of JSON, and these four
- *           functions are the only place where quotes, escapes and number
- *           formatting are handled, so everyone's replies look the same.
- * Course  : Lab 1 - basic functions and strings (no STL containers needed).
- *
- * FUNCTIONS (interface frozen in Section 4.7 of the team plan)
- *   jsonQuote(s)     "abc" with quotes; escapes " and \ (and line breaks)
- *   jsonError(msg)   {"ok":false,"error":"msg"}
- *   jsonMessage(msg) {"ok":true,"message":"msg"}
- *   numToStr(v)      12.5 -> "12.5", 3.0 -> "3", at most 2 decimals
- *
- * All functions are 'inline' so this header can be included by many files
- * without linker errors ("multiple definition").
- * =============================================================================
- */
+
+ 
 #pragma once
 #include <string>
 
-/*
- * jsonQuote: turns plain text into a JSON string literal.
- * Input : any text.
- * Output: the text wrapped in double quotes, with these characters escaped:
- *           "  ->  \"        \  ->  \\
- *           line feed, carriage return, tab -> \n  \r  \t
- *           any other control character (below space) -> \u00XX
- *         Escaping line breaks matters: a raw line break would split the reply
- *         into two lines and break the Python bridge.
- * Time  : O(length of s)
- */
+
 inline std::string jsonQuote(const std::string& s) {
     static const char* HEX_DIGITS = "0123456789abcdef";
     std::string out = "\"";
@@ -72,14 +44,6 @@ inline std::string jsonMessage(const std::string& msg) {
     return "{\"ok\":true,\"message\":" + jsonQuote(msg) + "}";
 }
 
-/*
- * numToStr: number to text with AT MOST 2 decimals and no trailing zeros.
- *   12.5 -> "12.5"    3.0 -> "3"    3.456 -> "3.46"    -0.001 -> "0"
- * We do the rounding by hand (multiply by 100, round, split) so we need no
- * extra headers and the result never uses scientific notation.
- * NaN or absurdly large values (beyond +-1e15) give "0" instead of garbage.
- * Time: O(1)
- */
 inline std::string numToStr(double v) {
     if (v != v || v > 1e15 || v < -1e15) return "0";   // v != v is true only for NaN
 
