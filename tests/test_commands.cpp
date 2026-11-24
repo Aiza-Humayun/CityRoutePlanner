@@ -1,16 +1,4 @@
-/*
- * File    : test_commands.cpp
- * Part    : C (Foundations, Interface, Web)
- * Purpose : End-to-end test of CommandHandler on the real sample map
- *           (data/map.txt). Follows the Section 10 checklist of the team plan.
- *           Prints one PASS/FAIL line per check.
- *
- * Build and run FROM THE PROJECT ROOT (the folder containing backend and data):
- *   g++ -std=c++17 -Wall -I backend -o tests/test_commands.exe tests/test_commands.cpp
- *   tests\test_commands.exe
- *
- * The test never sends SAVE, so data/map.txt is not changed.
- */
+
 
 #include <iostream>
 #include <string>
