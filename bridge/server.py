@@ -1,35 +1,4 @@
-"""
-=============================================================================
-File    : bridge/server.py
-Part    : C (Foundations, Interface, Web)
-Purpose : The Python BRIDGE between the web page and the C++ engine.
 
-  Web page  --(HTTP POST /api)-->  server.py  --(pipe)-->  planner.exe
-  Web page  <--(JSON reply)------  server.py  <--(pipe)--  planner.exe
-
-HOW IT WORKS (viva summary)
-  1. On start it launches backend/planner.exe ONCE, with its input and output
-     connected to pipes, and waits for the line {"ok":true,"message":"READY"}.
-  2. GET /          -> sends web/index.html (and other files from web/).
-  3. POST /api      -> the request body is ONE command line, for example
-                       ROUTE_DIST|Saddar|Clifton . The bridge writes it into the
-                       engine exactly like typing it in a console, reads ONE
-                       line back (one JSON reply) and returns it to the page.
-  4. A lock makes sure two requests never mix: the engine handles one command
-     at a time, and each command gets exactly its own reply line.
-  5. If the engine has stopped, every request gets
-     {"ok":false,"error":"Engine not running"}.
-
-The bridge never calculates anything and never changes the engine's reply.
-
-Only the Python standard library is used (http.server, subprocess, threading).
-No installs needed.
-
-Run (from anywhere; the script finds the project root itself):
-    python bridge/server.py          then open  http://localhost:8000
-    python bridge/server.py 9000     to use another port
-=============================================================================
-"""
 
 import atexit
 import mimetypes
