@@ -1,25 +1,4 @@
-/*
- * File:    test_route.cpp
- * Author:  Marium Jamshed (25K-3073) - Part A, Route Engine
- * Purpose: Tests Graph, MinHeap and RouteEngine on their own, using a small
- *          hand-built map. Prints one PASS/FAIL line per check.
- *
- * Build (from the project root):
- *   g++ -std=c++17 -Wall -I backend -o tests/test_route.exe tests/test_route.cpp
- * Run:
- *   tests\test_route.exe
- *
- * Test map (km, minutes):
- *
- *        A ---2km,10min--- B ---2km,10min--- D        F  (isolated)
- *        |  \______________20km,40min_______/|
- *        |                                   |
- *        +---5km,3min----- C ---5km,3min-----+
- *
- *   Shortest distance A->D : A,B,D   (4 km, 20 min)
- *   Fastest time      A->D : A,C,D   (10 km, 6 min)   <- different from distance
- *   Fewest roads      A->D : A,D     (1 road)
- */
+
 
 #include <iostream>
 #include <string>
