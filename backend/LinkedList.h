@@ -1,37 +1,4 @@
-/*
- * =============================================================================
- * File    : LinkedList.h
- * Part    : C (Foundations, Interface, Web)
- * Purpose : Two linked list templates used by the other parts:
- *             SinglyLinkedList<T> - Part A stores the final route (source to
- *                                   destination) in one.
- *             DoublyLinkedList<T> - Part B's TripHistory (oldest at the head,
- *                                   newest at the tail).
- * Course  : Lab 4 - linked lists.   Lab 1 - Rule of Three.
- *
- * HOW THEY WORK (viva summary)
- *   - A list is a chain of small separate blocks (nodes). Each node holds one
- *     value and a pointer to the next node (doubly: also to the previous one).
- *   - We keep a head pointer AND a tail pointer, so adding at either end does
- *     not need to walk the list.
- *   - RULE OF THREE: the list owns memory (its nodes). Without our own
- *     destructor the nodes would leak; without our own copy constructor and
- *     copy assignment, a copy would share the same nodes and both lists would
- *     delete them (crash). So we write all three and make real deep copies.
- *
- * COMPLEXITY
- *                         Singly          Doubly
- *   pushFront / pushBack  O(1)            O(1)
- *   popFront              O(1)            O(1)
- *   popBack               (not provided)  O(1)   <- thanks to the 'prev' pointer
- *   get(index)            O(n)            (not provided)
- *   reverse               O(n)            (not provided)
- *   clear / copy          O(n)            O(n)
- *
- * SAFETY: popFront / popBack / get on an empty list or a bad index must NOT
- * crash. They print a message to std::cerr and return T() (never to cout).
- * =============================================================================
- */
+
 #pragma once
 #include <iostream>
 
