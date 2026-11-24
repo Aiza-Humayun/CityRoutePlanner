@@ -1,41 +1,4 @@
-/*
- * =============================================================================
- * File    : MapManager.h
- * Part    : B (Map Data and Analysis)
- * Purpose : Everything about the map as DATA:
- *             - add / update / remove locations and roads (with validation)
- *             - look up locations by name (HashTable) and list them sorted (AVLTree)
- *             - undo the last edit (Stack of snapshots)
- *             - save the map to a file and load it back
- *             - build the JSON that the web page uses to draw the map
- * Course  : Lab 10 (hash table), Lab 8/9 (AVL tree), Lab 5 (stack for undo),
- *           Lab 1 (ADT: the rest of the program only uses the public functions).
- *
- * THE THREE THINGS THAT MUST ALWAYS AGREE
- *   1. the Graph       (Part A's structure: locations and roads)
- *   2. the HashTable   (name -> id, for fast lookup)
- *   3. the AVLTree     (names kept sorted)
- *   Every function below that changes a location keeps all three in sync.
- *
- * HOW UNDO WORKS (viva summary)
- *   Order inside every edit:  VALIDATE -> SNAPSHOT -> APPLY.
- *   - validate : check the request. If it is wrong, return an error and change nothing
- *                (so a failed edit never creates an undo step).
- *   - snapshot : serialize() the whole map to text and push that text on a stack.
- *   - apply    : do the change.
- *   undo() pops the newest snapshot and rebuilds the map from that text.
- *   A stack is the right structure because undo is Last-In-First-Out.
- *   Only add/update/remove of locations and roads are undoable.
- *
- * NOTE ON IDS
- *   Ids are internal. After load or undo, ids are renumbered 0,1,2,... in order.
- *   That is safe because Part C's command handler converts names to ids fresh for
- *   every command, and the web page only ever uses names.
- *
- * Every public function RETURNS a JSON string (never prints), as agreed in the
- * Team Work Plan, Section 4.5. Errors use jsonError(...).
- * =============================================================================
- */
+
 #pragma once
 #include <string>
 #include <sstream>
