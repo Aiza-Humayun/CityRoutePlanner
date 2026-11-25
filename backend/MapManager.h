@@ -11,17 +11,19 @@
 
 class MapManager {
 private:
-    Graph&             graph;       // the map (owned by CommandHandler, shared with Part A)
-    HashTable          index;       // lowercase name -> id
-    AVLTree            sorted;      // names in alphabetical order
-    Stack<std::string> undoStack;   // snapshots of the map before each edit
+    Graph&             graph;       
+    HashTable          index;       
+
+
+
+    AVLTree            sorted;
+    Stack<std::string> undoStack;   
 
     static constexpr int    MAX_NAME_LENGTH = 30;
     static constexpr double MAX_COORDINATE  = 5000;     // x and y must be 0..5000
     static constexpr double MAX_ROAD_VALUE  = 100000;   // distance/time upper limit
 
-    // ======================================================== small text helpers
-    // Removes spaces/tabs/line breaks from both ends. "  Saddar " -> "Saddar"
+    
     static std::string trim(const std::string& s) {
         size_t a = 0, b = s.size();
         while (a < b && (s[a] == ' ' || s[a] == '\t' || s[a] == '\r' || s[a] == '\n')) a++;
@@ -38,8 +40,7 @@ private:
         return out;
     }
 
-    // Checks the naming rules (Section 4.3 of the plan). 'name' must already be trimmed.
-    // On failure, writes the reason into 'err' and returns false.
+   
     static bool validateName(const std::string& name, std::string& err) {
         if (name.empty()) { err = "Location name cannot be empty"; return false; }
         if ((int)name.size() > MAX_NAME_LENGTH) {
@@ -60,8 +61,7 @@ private:
         return true;
     }
 
-    // Converts text to a double. Returns false if the text is not exactly one number.
-    // ("3.5abc" and "" are rejected.)
+   
     static bool parseDouble(const std::string& text, double& out) {
         std::istringstream in(text);
         if (!(in >> out)) return false;
@@ -77,8 +77,7 @@ private:
         return in.eof();
     }
 
-    // Splits 'line' at every comma into fields[]. Returns how many fields were found
-    // (stops counting at maxFields; extra fields make the count exceed what callers expect).
+    
     static int splitCommas(const std::string& line, std::string* fields, int maxFields) {
         int count = 0;
         size_t start = 0;
@@ -99,15 +98,8 @@ private:
     static bool validRoadValue(double v) { return v > 0 && v <= MAX_ROAD_VALUE; }
     static bool validCoordinate(double v) { return v >= 0 && v <= MAX_COORDINATE; }
 
-    /*
-     * nextRoadFrom: returns the road of location u whose other end has the SMALLEST id
-     * that is greater than 'after' (and greater than u, so each two-way road is
-     * reported only once). Returns nullptr when there are no more.
-     * Why: a graph's adjacency list order changes after reload/undo. Walking roads
-     * through this helper makes serialize() and getMapJson() output ALWAYS come out
-     * in the same order (by id), so saved files and replies are stable.
-     * Usage:  for (e = nextRoadFrom(u, u); e; e = nextRoadFrom(u, e->to)) { ... }
-     */
+   
+     
     EdgeNode* nextRoadFrom(int u, int after) const {
         EdgeNode* best = nullptr;
         for (EdgeNode* e = graph.getEdges(u); e != nullptr; e = e->next) {
@@ -128,13 +120,7 @@ private:
         return roads;
     }
 
-    // ============================================== serialize / parse (map <-> text)
-    /*
-     * serialize: converts the whole map to text in the file format of Section 4.3.
-     * Locations are written with NEW ids 0,1,2,... (gaps from removed locations
-     * are closed), and roads use those new ids. Each road is written once.
-     * Used by BOTH saveToFile() and the undo snapshots, so the format is written once.
-     */
+    
     std::string serialize() const {
         int n = graph.nodeCount();
         int* newId = new int[n > 0 ? n : 1];         // oldId -> sequential id
@@ -165,12 +151,7 @@ private:
         return out.str();
     }
 
-    /*
-     * parseInto: clears the map and rebuilds it (graph + hash table + AVL tree)
-     * from map text. Returns "" on success, or an error message such as
-     * "Line 7: distance must be a positive number".
-     * NOTE: on error the map is left half-built; restoreFrom() below repairs that.
-     */
+   
     std::string parseInto(const std::string& text) {
         graph.clear();
         index.clear();
@@ -288,18 +269,12 @@ public:
     MapManager(const MapManager&) = delete;
     MapManager& operator=(const MapManager&) = delete;
 
-    // ================================================================= lookups
-    /*
-     * findId: name -> id through the HASH TABLE. Returns -1 if there is no such
-     * location. Case-insensitive; spaces around the name are ignored.
-     * Part C's command handler calls this to convert names to ids.
-     */
+    
     int findId(const std::string& name) {
         return index.find(trim(name));
     }
 
-    // FIND command. Reply: {"ok":true,"found":true,"name":"Saddar","x":120,"y":340}
-    // or {"ok":true,"found":false} when the name does not exist.
+    
     std::string findLocation(const std::string& name) {
         int id = findId(name);
         if (id == -1) return "{\"ok\":true,\"found\":false}";
