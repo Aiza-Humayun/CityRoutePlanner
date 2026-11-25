@@ -3,7 +3,7 @@
 
 class AVLTree {
 private:
-    // One tree node.
+    // ISME NODE BANAY HAIII 
     struct Node {
         std::string name;     
         std::string key;     
@@ -19,10 +19,13 @@ private:
     Node* root;    // top of the tree (nullptr when empty)
     int   count;   // number of names stored
 
-    // ---------------------------------------------------------------- helpers
+
     static std::string toLowerKey(const std::string& s) {
         std::string out = s;
         for (size_t i = 0; i < out.size(); i++) {
+
+            
+            
             if (out[i] >= 'A' && out[i] <= 'Z') out[i] = (char)(out[i] + ('a' - 'A'));
         }
         return out;
@@ -40,12 +43,14 @@ private:
         return n ? heightOf(n->left) - heightOf(n->right) : 0;
     }
 
-    // ------------------------------------------------------------- rotations
+    
     static Node* rotateRight(Node* y) {
         Node* x = y->left;
         Node* b = x->right;
         x->right = y;          // y becomes the right child of x
-        y->left = b;           // x's old right subtree moves under y
+        y->left = b;   
+
+        
         updateHeight(y);       // y is lower now, so update it FIRST
         updateHeight(x);
         return x;
@@ -61,8 +66,6 @@ private:
         return y;
     }
 
-    // Checks one node and fixes it if unbalanced. Returns the (possibly new) top of
-    // this subtree. Called on the way back up after every insert/remove.
     static Node* rebalance(Node* n) {
         updateHeight(n);
         int balance = balanceOf(n);
@@ -74,7 +77,9 @@ private:
             return rotateRight(n);                   // case LL (or fixed LR)
         }
         if (balance < -1) {                          // RIGHT side too tall
-            if (balanceOf(n->right) > 0) {           // case RL: right child leans left
+            if (balanceOf(n->right) > 0) {   
+
+                
                 n->right = rotateRight(n->right);    //   first turn it into case RR
             }
             return rotateLeft(n);                    // case RR (or fixed RL)
@@ -82,7 +87,7 @@ private:
         return n;                                    // already balanced
     }
 
-    // ---------------------------------------------------------------- insert
+    //insert kra hai
     static Node* insertNode(Node* n, const std::string& name, const std::string& key,
                             int id, bool& inserted) {
         if (n == nullptr) {                          // found the empty spot
@@ -98,28 +103,31 @@ private:
         return rebalance(n);
     }
 
-    // ---------------------------------------------------------------- remove
+    //  remove
     static Node* removeNode(Node* n, const std::string& key, bool& removed) {
         if (n == nullptr) return nullptr;            // key not in the tree
 
         if (key < n->key) {
             n->left = removeNode(n->left, key, removed);
+
+            
         } else if (key > n->key) {
             n->right = removeNode(n->right, key, removed);
         } else {
             removed = true;
-            // Case 1 and 2: zero or one child -> replace the node by its child.
+            // zero or one child
             if (n->left == nullptr || n->right == nullptr) {
                 Node* child = n->left ? n->left : n->right;
                 delete n;
                 return child;                        // (nullptr if it was a leaf)
             }
-            // Case 3: two children -> copy the IN-ORDER SUCCESSOR (smallest node
-            // of the right subtree) into this node, then delete that successor.
+    
             Node* successor = n->right;
             while (successor->left != nullptr) successor = successor->left;
             n->name = successor->name;
             n->key  = successor->key;
+
+            
             n->id   = successor->id;
             std::string successorKey = successor->key;   // copy: the node is about to be freed
             bool ignored = false;
@@ -128,11 +136,13 @@ private:
         return rebalance(n);
     }
 
-    // ------------------------------------------------------------- traversals
+    // traversals kiya hai thora mushkil hai
     static void fillInOrder(Node* n, std::string* names, int* ids, int& pos) {
         if (n == nullptr) return;
         fillInOrder(n->left, names, ids, pos);
         names[pos] = n->name;
+
+        
         ids[pos] = n->id;
         pos++;
         fillInOrder(n->right, names, ids, pos);
@@ -144,6 +154,8 @@ private:
 
     static void fillPrefix(Node* n, const std::string& prefix,
                            std::string* names, int* ids, int& pos) {
+
+        
         if (n == nullptr) return;
         bool matches = startsWith(n->key, prefix);
         if (n->key >= prefix) fillPrefix(n->left, prefix, names, ids, pos);
@@ -155,12 +167,15 @@ private:
         if (n->key < prefix || matches) fillPrefix(n->right, prefix, names, ids, pos);
     }
 
-    // Used by isBalanced(): recomputes the real height and checks every node.
+    
     static bool checkBalanced(Node* n, int& realHeight) {
         if (n == nullptr) { realHeight = 0; return true; }
         int lh = 0, rh = 0;
         if (!checkBalanced(n->left, lh))  return false;
         if (!checkBalanced(n->right, rh)) return false;
+
+
+        
         realHeight = 1 + maxOf(lh, rh);
         int diff = lh - rh;
         if (diff < -1 || diff > 1) return false;       // balance factor out of range
@@ -168,13 +183,16 @@ private:
         return true;
     }
 
-    // Deep copy / destroy (recursive).
+    
     static Node* cloneTree(Node* n) {
         if (n == nullptr) return nullptr;
         Node* copy = new Node(n->name, n->key, n->id);
+
+        
         copy->height = n->height;
         copy->left = cloneTree(n->left);
         copy->right = cloneTree(n->right);
+        
         return copy;
     }
     static void destroyTree(Node* n) {
@@ -192,7 +210,11 @@ public:
     AVLTree& operator=(const AVLTree& other) {
         if (this != &other) {
             destroyTree(root);
+
+            
             root = cloneTree(other.root);
+
+            
             count = other.count;
         }
         return *this;
@@ -203,9 +225,13 @@ public:
     // insert: adds name -> id. Returns false if the name (ignoring case) already exists.
     bool insert(const std::string& name, int id) {
         bool inserted = false;
-        root = insertNode(root, name, toLowerKey(name), id, inserted);
+                root = insertNode(root, name, toLowerKey(name), id, inserted);
+        
+        
         if (inserted) count++;
         return inserted;
+
+        
     }
 
     // remove: deletes a name. Returns false if it was not in the tree.
@@ -226,12 +252,18 @@ public:
             else                   return n->id;
         }
         return -1;
+
+
+        
     }
 
     int toArray(std::string* names, int* ids) const {
         int pos = 0;
         fillInOrder(root, names, ids, pos);
         return pos;
+
+
+        
     }
 
     int prefixSearch(const std::string& prefix, std::string* names, int* ids) const {
