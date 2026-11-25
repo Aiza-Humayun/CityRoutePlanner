@@ -1,33 +1,4 @@
-/*
- * =============================================================================
- * File    : Queue.h
- * Part    : C (Foundations, Interface, Web)
- * Purpose : A queue (first in, first out) stored in a CIRCULAR ARRAY.
- *           Used by Part A: Queue<int> in the BFS that finds the route with
- *           the fewest roads.
- * Course  : Lab 5 - queues.  Lab 2 - dynamic arrays.  Lab 1 - Rule of Three.
- *
- * HOW IT WORKS (viva summary)
- *   - Items live in an array. 'frontIndex' is where the oldest item is and
- *     'count' says how many items there are.
- *   - enqueue writes at position (frontIndex + count) % capacity,
- *     dequeue reads at frontIndex and then moves frontIndex forward by one
- *     (also with % capacity).
- *   - WHY CIRCULAR? In a plain array, dequeue would either shift every item
- *     one step (O(n)) or leave an ever-growing empty gap at the start. With
- *     modulo, positions that were freed at the front are REUSED at the back,
- *     so both enqueue and dequeue are O(1) and no space is wasted.
- *   - When the array is full it is replaced by one twice as big. The items are
- *     copied IN QUEUE ORDER, so the new array starts at index 0 again.
- *   - Compare with Stack.h: that one is a plain dynamic array.
- *
- * COMPLEXITY
- *   enqueue O(1) amortized, dequeue O(1), front O(1), isEmpty/size O(1), clear O(1)
- *
- * SAFETY: dequeue() / front() on an empty queue must NOT crash. They print a
- * message to std::cerr and return T() (callers should still check isEmpty()).
- * =============================================================================
- */
+
 #pragma once
 #include <iostream>
 
@@ -36,13 +7,12 @@ class Queue {
 private:
     T*  data;          // the circular array
     int capacity;      // size of the array
-    int frontIndex;    // position of the oldest item
+    int frontIndex;    
     int count;         // items stored
 
     static constexpr int INITIAL_CAPACITY = 16;
 
-    // Replaces the array with one twice as big, copying the items in queue
-    // order so that the oldest one lands at index 0.  Time: O(n)
+   
     void grow() {
         int newCapacity = capacity * 2;
         T* bigger = new T[newCapacity];
@@ -93,8 +63,6 @@ public:
         count++;
     }
 
-    // Removes and returns the oldest value.
-    // Empty queue: message to cerr, returns T().  Time: O(1)
     T dequeue() {
         if (count == 0) {
             std::cerr << "Queue::dequeue on empty queue\n";
@@ -106,9 +74,6 @@ public:
         return value;
     }
 
-    // Reference to the oldest value (not removed).
-    // Empty queue: message to cerr, returns a reference to a blank T().
-    // Time: O(1)
     T& front() {
         if (count == 0) {
             std::cerr << "Queue::front on empty queue\n";
