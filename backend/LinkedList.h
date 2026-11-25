@@ -2,10 +2,6 @@
 #pragma once
 #include <iostream>
 
-// ============================================================================
-//  SINGLY LINKED LIST
-// ============================================================================
-
 // One node of a singly linked list.
 template<typename T>
 struct ListNode {
@@ -17,12 +13,10 @@ struct ListNode {
 template<typename T>
 class SinglyLinkedList {
 private:
-    ListNode<T>* head;    // first node (nullptr when empty)
-    ListNode<T>* tail;    // last node  (nullptr when empty)
-    int          count;   // number of nodes
+    ListNode<T>* head;    
+    ListNode<T>* tail;    
+    int          count;   
 
-    // Appends a copy of every value of 'other' (used by copy constructor/assignment).
-    // Time: O(n)
     void copyFrom(const SinglyLinkedList& other) {
         for (ListNode<T>* n = other.head; n != nullptr; n = n->next) {
             pushBack(n->data);
@@ -67,8 +61,7 @@ public:
         count++;
     }
 
-    // Removes the first value and returns it.
-    // Empty list: message to cerr, returns T().  Time: O(1)
+
     T popFront() {
         if (head == nullptr) {
             std::cerr << "SinglyLinkedList::popFront on empty list\n";
@@ -102,8 +95,7 @@ public:
     // First node, so callers can walk:  for (n = list.getHead(); n; n = n->next)
     ListNode<T>* getHead() const { return head; }
 
-    // Value at position 'index' (0 = first). Bad index: message to cerr, returns T().
-    // Time: O(index)
+
     T get(int index) const {
         if (index < 0 || index >= count) {
             std::cerr << "SinglyLinkedList::get index " << index << " out of range\n";
@@ -114,8 +106,7 @@ public:
         return n->data;
     }
 
-    // Reverses the list in place by turning every 'next' pointer around.
-    // Time: O(n), no extra memory.
+ 
     void reverse() {
         ListNode<T>* previous = nullptr;
         ListNode<T>* current = head;
@@ -129,10 +120,6 @@ public:
         head = previous;
     }
 };
-
-// ============================================================================
-//  DOUBLY LINKED LIST
-// ============================================================================
 
 // One node of a doubly linked list.
 template<typename T>
@@ -162,12 +149,12 @@ public:
     // Creates an empty list.
     DoublyLinkedList() : head(nullptr), tail(nullptr), count(0) {}
 
-    // RULE OF THREE (1/3): copy constructor.
+   
     DoublyLinkedList(const DoublyLinkedList& other) : head(nullptr), tail(nullptr), count(0) {
         copyFrom(other);
     }
 
-    // RULE OF THREE (2/3): copy assignment.
+    
     DoublyLinkedList& operator=(const DoublyLinkedList& other) {
         if (this != &other) {
             clear();
@@ -197,8 +184,7 @@ public:
         count++;
     }
 
-    // Removes the first value and returns it. Empty: message to cerr, returns T().
-    // Time: O(1)
+    
     T popFront() {
         if (head == nullptr) {
             std::cerr << "DoublyLinkedList::popFront on empty list\n";
@@ -214,8 +200,7 @@ public:
         return value;
     }
 
-    // Removes the last value and returns it. Empty: message to cerr, returns T().
-    // Time: O(1) - the 'prev' pointer lets us step back without walking.
+
     T popBack() {
         if (tail == nullptr) {
             std::cerr << "DoublyLinkedList::popBack on empty list\n";
